@@ -6,9 +6,12 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+
+	// "github.com/purcell3a/webchat/models/users"
 	_ "github.com/go-sql-driver/mysql"
-	"sync"
 )
+
+var tmpl = template.Must(template.ParseGlob("form/*"))
 
 type Todo struct {
 	Title string
@@ -18,6 +21,14 @@ type Todo struct {
 type TodoPageData struct {
 	PageTitle string
 	Todos     []Todo
+}
+
+func TopicOne(w http.ResponseWriter, r *http.Request) {
+	tmpl.ExecuteTemplate(w, "TopicOne", nil)
+}
+
+func Index(w http.ResponseWriter, r *http.Request) {
+	tmpl.ExecuteTemplate(w, "Index", nil)
 }
 
 // type templateHandler struct {
@@ -48,11 +59,13 @@ func main() {
 
 	// root
 	// http.Handle("/", &templateHandler{filename: "chat.html"})
-	tmpl := template.Must(template.ParseFiles("chat.html"))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// data := ""
-		tmpl.Execute(w, nil)
-	})
+	http.HandleFunc("/topicone", TopicOne)
+	http.HandleFunc("/", Index)
+	// tmpl := template.Must(template.ParseFiles("chat.html"))
+	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	// data := ""
+	// 	tmpl.Execute(w, nil)
+	// })
 	// start the webserver
 	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
@@ -86,14 +99,5 @@ and the POST which processes it.*/
 // 		//io.WriteString(w, request.Form["in"][0])
 // 		// easier method:
 // 		io.WriteString(w, request.FormValue("in"))
-// 	}
-// }
-
-// func main() {
-
-// 	http.HandleFunc("/test1", SimpleServer)
-// 	http.HandleFunc("/test2", FormServer)
-// 	if err := http.ListenAndServe("0.0.0.0:3000", nil); err != nil {
-// 		panic(err)
 // 	}
 // }
