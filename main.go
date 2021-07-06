@@ -11,21 +11,23 @@ import (
 
 var tmpl = template.Must(template.ParseGlob("form/*"))
 
-// type Topic struct{
-// 	title string
-// 	intro string
-// }
+type Topic struct{
+	title string
+	intro string
+	route string
+}
 
-// func ChooseTopic(t *Topic){
-// 	switch t.title {
-// 	case "topicOne":
-// 		return
-// 	case "topicTwo":
-// 		return
-// 	case "topicThree":
-// 		return
-// 	}
-// }
+func GenerateTopic(t *Topic) string{
+	switch t.title {
+	case "topicOne":
+		return t.route
+	case "topicTwo":
+		return t.route
+	case "topicThree":
+		return t.route
+	}
+	return "n"
+}
 
 /* handle a form, both the GET which displays the form
 and the POST which processes it.*/
