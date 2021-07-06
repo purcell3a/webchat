@@ -6,34 +6,25 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-
 	_ "github.com/go-sql-driver/mysql"
-
-	// "path/filepath"
 	"sync"
 )
-
-// func init() {
-// 	sql.Register("mysql", &MySQLDriver{})
-// }
-
-//The above function registers the SQL driver named mysql
 
 type Todo struct {
 	Title string
 	Done  bool
 }
 
-type templateHandler struct {
-	once     sync.Once
-	filename string
-	templ    *template.Template
-}
-
 type TodoPageData struct {
 	PageTitle string
 	Todos     []Todo
 }
+
+// type templateHandler struct {
+// 	once     sync.Once
+// 	filename string
+// 	templ    *template.Template
+// }
 
 // // this method loads the source file, compiles the template, executes it and
 // //writes the output to the specifeid httm.ResponsWriter method bc sercehttp method
@@ -62,7 +53,7 @@ func main() {
 		// data := ""
 		tmpl.Execute(w, nil)
 	})
-	// // start the webserver
+	// start the webserver
 	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
