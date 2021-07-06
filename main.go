@@ -1,12 +1,28 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
-	"path/filepath"
+
+	_ "github.com/go-sql-driver/mysql"
+
+	// "path/filepath"
 	"sync"
 )
+
+// func init() {
+// 	sql.Register("mysql", &MySQLDriver{})
+// }
+
+//The above function registers the SQL driver named mysql
+
+type Todo struct {
+	Title string
+	Done  bool
+}
 
 type templateHandler struct {
 	once     sync.Once
@@ -14,30 +30,44 @@ type templateHandler struct {
 	templ    *template.Template
 }
 
-// this method loads the source file, compiles the template, executes it and
-//writes the output to the specifeid httm.ResponsWriter method bc sercehttp method
-//satisfies the http.handler interface and we can pass it directly to http.Handler
-func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	t.once.Do(func() {
-		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
-	})
-	t.templ.Execute(w, nil)
+type TodoPageData struct {
+	PageTitle string
+	Todos     []Todo
 }
 
-func main() {
-	// root
-	http.Handle("/", &templateHandler{filename: "chat.html"})
+// // this method loads the source file, compiles the template, executes it and
+// //writes the output to the specifeid httm.ResponsWriter method bc sercehttp method
+// //satisfies the http.handler interface and we can pass it directly to http.Handler
+// func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// 	t.once.Do(func() {
+// 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
+// 	})
+// 	t.templ.Execute(w, nil)
+// }
 
-	// start the webserver
+func main() {
+
+	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/employeedb")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Connection Established")
+	}
+	defer db.Close()
+
+	// root
+	// http.Handle("/", &templateHandler{filename: "chat.html"})
+	tmpl := template.Must(template.ParseFiles("chat.html"))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// data := ""
+		tmpl.Execute(w, nil)
+	})
+	// // start the webserver
 	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
+	http.ListenAndServe(":3000", nil)
 }
-
-// const form = `<html><body><form action="#" method="post" name="bar">
-// <input type="text" name="in"/>
-// <input type="submit" value="Submit"/>
-// </form></html></body>`
 
 /* handle a simple get request */
 // func SimpleServer(w http.ResponseWriter, request *http.Request) {
